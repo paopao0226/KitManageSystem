@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,16 +15,19 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
-//import org.json.JSONArray;
-//import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //配置模型设置
+        // virtual device config
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .detectDiskReads().detectDiskWrites().detectNetwork()
                 .penaltyLog().build());
@@ -46,7 +50,35 @@ public class MainActivity extends AppCompatActivity {
         loginbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                receivefield.setText(rClient.transportmsg(usernamefield.getText().toString()+"+"+passwordfield.getText().toString(),mainsocket));
+                /* String */
+                // receivefield.setText(rClient.transportmsg(usernamefield.getText().toString()+"+"+passwordfield.getText().toString(),mainsocket));
+
+                /* json */
+                // send
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("username",usernamefield.getText().toString());
+                    jsonObject.put("password",passwordfield.getText().toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                // String jsonStringSend = jsonObject.toString();
+                // multi jsonobject
+                Log.d("json",jsonObject.toString());
+                JSONArray jsonArray = new JSONArray();
+                jsonArray.put(jsonObject);
+                String jsonStringSend = jsonObject.toString();
+
+                // receive
+                String jsonStringReceive = rClient.transportmsg("["+jsonStringSend+"]",mainsocket);
+                try {
+                    JSONArray jsonArrayReceive = new JSONArray(jsonStringReceive);
+                    if (jsonArrayReceive.isNull(0)){
+                        receivefield.setText("input false");
+                    }else receivefield.setText("success login");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
