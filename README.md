@@ -26,3 +26,11 @@ CRF：
 
 
 
+2020年1月31日：
+
+CRF：
+
+更新Android端的数据传输形式，使用json传输，并学习了Gson、FastJSON、jackson等解析方式，在后续开发可以使用。
+
+
+
